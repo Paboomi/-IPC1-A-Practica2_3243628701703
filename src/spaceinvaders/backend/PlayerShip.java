@@ -116,4 +116,10 @@ public class PlayerShip {
     public Rectangle getHitbox() {
         return new Rectangle(x, y, width, height);
     }
+
+    public List<Shot> getShots() {
+        return shots;
+    }
+    
+    
 }
