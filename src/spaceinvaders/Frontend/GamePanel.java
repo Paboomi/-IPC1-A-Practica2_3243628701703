@@ -21,7 +21,7 @@ public class GamePanel extends JPanel implements ActionListener {
     private PlayerShip playerShip;
     private Timer timer;
     private ImageIcon backgroundGif;
-    private String PATH_BACKGROUND = "spaceinvaders/Images/stars-space-edit.gif";
+    private String PATH_BACKGROUND = "spaceinvaders/Images/space2.gif";
 
     public GamePanel() {
         setPreferredSize(new Dimension(1280, 662));
