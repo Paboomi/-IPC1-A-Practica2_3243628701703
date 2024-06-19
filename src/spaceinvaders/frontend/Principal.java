@@ -1,4 +1,4 @@
-package spaceinvaders.Frontend;
+package spaceinvaders.frontend;
 
 import javax.swing.ImageIcon;
 

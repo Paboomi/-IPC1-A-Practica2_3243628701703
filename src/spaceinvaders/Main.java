@@ -1,6 +1,6 @@
 package spaceinvaders;
 
-import spaceinvaders.Frontend.SpaceInvaders;
+import spaceinvaders.frontend.SpaceInvaders;
 
 /**
  *

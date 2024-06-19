@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import spaceinvaders.Frontend.GamePanel;
+import spaceinvaders.frontend.GamePanel;
 
 import java.awt.Graphics;
 import java.awt.Image;

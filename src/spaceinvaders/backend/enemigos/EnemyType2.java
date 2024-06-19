@@ -1,6 +1,6 @@
 package spaceinvaders.backend.enemigos;
 
-import spaceinvaders.Frontend.GamePanel;
+import spaceinvaders.frontend.GamePanel;
 
 /**
  *

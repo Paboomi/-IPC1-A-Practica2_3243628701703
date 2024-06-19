@@ -5,7 +5,9 @@
         <group>
             <file>file:/mnt/datos/JAVA/IPC1%202024%20VAQUERAS/Laboratorio/PRACTICA%202%20IPC1/SpaceInvaders/src/spaceinvaders/Main.java</file>
             <file>file:/mnt/datos/JAVA/IPC1%202024%20VAQUERAS/Laboratorio/PRACTICA%202%20IPC1/SpaceInvaders/src/spaceinvaders/backend/PlayerShip.java</file>
+            <file>file:/mnt/datos/JAVA/IPC1%202024%20VAQUERAS/Laboratorio/PRACTICA%202%20IPC1/SpaceInvaders/src/spaceinvaders/backend/Contador.java</file>
             <file>file:/mnt/datos/JAVA/IPC1%202024%20VAQUERAS/Laboratorio/PRACTICA%202%20IPC1/SpaceInvaders/src/spaceinvaders/Frontend/SpaceInvaders.java</file>
+            <file>file:/mnt/datos/JAVA/IPC1%202024%20VAQUERAS/Laboratorio/PRACTICA%202%20IPC1/SpaceInvaders/src/spaceinvaders/backend/enemigos/Enemy.java</file>
             <file>file:/mnt/datos/JAVA/IPC1%202024%20VAQUERAS/Laboratorio/PRACTICA%202%20IPC1/SpaceInvaders/src/spaceinvaders/Frontend/GamePanel.java</file>
             <file>file:/mnt/datos/JAVA/IPC1%202024%20VAQUERAS/Laboratorio/PRACTICA%202%20IPC1/SpaceInvaders/src/spaceinvaders/backend/Shot.java</file>
         </group>

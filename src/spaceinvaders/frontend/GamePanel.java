@@ -1,4 +1,4 @@
-package spaceinvaders.Frontend;
+package spaceinvaders.frontend;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -14,9 +14,12 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import spaceinvaders.backend.Contador;
 import spaceinvaders.backend.PlayerShip;
 import spaceinvaders.backend.Shot;
 import spaceinvaders.backend.enemigos.*;
+import spaceinvaders.backend.items.*;
+import spaceinvaders.backend.jugador.Jugador;
 
 /**
  *
@@ -32,6 +35,9 @@ public class GamePanel extends JPanel implements ActionListener {
     private boolean movingDown = true;
     private boolean verticalMoveComplete = false;
     private int enemySpeed = 6;
+    private Contador contador;
+    private Jugador jugador;
+    private List<Item> items;
 
     public GamePanel() {
         setPreferredSize(new Dimension(1280, 662));
@@ -59,7 +65,42 @@ public class GamePanel extends JPanel implements ActionListener {
         timer.start();
 
         enemies = new ArrayList<>();
+        items = new ArrayList<>();
         initEnemies();
+        initItems();
+    }
+
+    private void initItems() {
+        Timer itemTimer = new Timer(5000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                generateRandomItem();
+            }
+        });
+        itemTimer.start();
+    }
+
+    private void generateRandomItem() {
+        int randomY = (int) (Math.random() * getHeight());
+        int randomType = (int) (Math.random() * 4); // Suponiendo 4 tipos de ítems
+        Item item;
+        switch (randomType) {
+            case 0:
+                item = new AumentoTiempo(getWidth(), randomY, this);
+                break;
+            case 1:
+                item = new PuntosExtra(getWidth(), randomY, this);
+                break;
+            case 2:
+                item = new DisminucionTiempo(getWidth(), randomY, this);
+                break;
+            case 3:
+                item = new Penalizacion(getWidth(), randomY, this);
+                break;
+            default:
+                return;
+        }
+        items.add(item);
     }
 
     private void initEnemies() {
@@ -92,6 +133,7 @@ public class GamePanel extends JPanel implements ActionListener {
             enemies.remove(enemy);
         }
     }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -109,6 +151,11 @@ public class GamePanel extends JPanel implements ActionListener {
                 }
             }
         }
+        
+        // Dibujar ítems
+        for (Item item : items) {
+            item.draw(g);
+        }
     }
 
     @Override
@@ -116,7 +163,19 @@ public class GamePanel extends JPanel implements ActionListener {
         playerShip.move();
         moveEnemies();
         checkCollisions();
+        moveItems();
         repaint();
+    }
+
+    private void moveItems() {
+        Iterator<Item> iterator = items.iterator();
+        while (iterator.hasNext()) {
+            Item item = iterator.next();
+            item.move();
+            if (!item.isActive()) {
+                iterator.remove();
+            }
+        }
     }
 
     private void moveEnemies() {
@@ -149,7 +208,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
         // Mover enemigos
         for (Enemy enemy : enemies) {
-            
+
             if (verticalMoveComplete) {
                 enemy.moveLeft(enemySpeed);
             } else {
@@ -189,5 +248,35 @@ public class GamePanel extends JPanel implements ActionListener {
                 }
             }
         }
+
+        // Verificar colisiones de ítems y la nave del jugador
+        Iterator<Item> iterator = items.iterator();
+        while (iterator.hasNext()) {
+            Item item = iterator.next();
+            if (playerShip.getHitbox().intersects(item.getHitbox())) {
+                item.applyEffect(jugador, contador);
+                iterator.remove();
+            }
+        }
     }
+
+    public Contador getContador() {
+        return contador;
+    }
+
+    public void setContador(Contador contador) {
+        this.contador = contador;
+    }
+
+//    public void addTime(int seconds) {
+//        contador.addTime(seconds);
+//    }
+//
+//    public void addPoints(int points) {
+//        playerShip.addPoints(points); // Suponiendo que PlayerShip tiene un método para agregar puntos
+//    }
+    public void setJugador(Jugador jugador) {
+        this.jugador = jugador;
+    }
+
 }

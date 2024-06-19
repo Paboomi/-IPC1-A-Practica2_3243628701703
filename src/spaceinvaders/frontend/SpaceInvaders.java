@@ -1,15 +1,21 @@
-package spaceinvaders.Frontend;
+package spaceinvaders.frontend;
 
 import java.awt.BorderLayout;
 import javax.swing.*;
 import spaceinvaders.backend.Contador;
+import spaceinvaders.backend.jugador.Jugador;
+import spaceinvaders.frontend.util.ActualizarScore;
+import spaceinvaders.frontend.util.ActualizarTimer;
 
-public class SpaceInvaders extends javax.swing.JFrame {
+public class SpaceInvaders extends javax.swing.JFrame implements ActualizarScore, ActualizarTimer{
 
     private Contador contador;
+    private Jugador jugador;
 
     public SpaceInvaders() {
         initComponents();
+        jugador = new Jugador();
+        jugador.
         GamePanel gamePanel = new GamePanel();
         pnlJuego.setLayout(new BorderLayout());
         pnlJuego.add(gamePanel, BorderLayout.CENTER);
@@ -19,7 +25,8 @@ public class SpaceInvaders extends javax.swing.JFrame {
                 () -> JOptionPane.showMessageDialog(this, "Termino el tiempo")
         );
         contador.start();
-
+        gamePanel.setContador(contador);
+        gamePanel.setJugador(jugador);
         setLocationRelativeTo(null);
         setVisible(true);
     }
@@ -166,4 +173,15 @@ public class SpaceInvaders extends javax.swing.JFrame {
     private javax.swing.JPanel pnlIndicadores;
     private javax.swing.JPanel pnlJuego;
     // End of variables declaration//GEN-END:variables
+
+
+    @Override
+    public void actualizarScore() {
+        lblScore.setText(Integer.toString(jugador.getPuntaje()));
+    }
+
+    @Override
+    public void actualizarTimer() {
+        lblTimer.setText(Integer.toString(contador.getCount()));
+    }
 }
