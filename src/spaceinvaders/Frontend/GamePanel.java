@@ -29,6 +29,9 @@ public class GamePanel extends JPanel implements ActionListener {
     private ImageIcon backgroundGif;
     private String PATH_BACKGROUND = "spaceinvaders/Images/space2.gif";
     private List<Enemy> enemies;
+    private boolean movingDown = true;
+    private boolean verticalMoveComplete = false;
+    private int enemySpeed = 5;
 
     public GamePanel() {
         setPreferredSize(new Dimension(1280, 662));
@@ -61,9 +64,9 @@ public class GamePanel extends JPanel implements ActionListener {
 
     private void initEnemies() {
         // Posicionamos a los enemigos
-        int startX = 1000; 
-        int startY = 50;  
-        int spacing = 40;  
+        int startX = 1000;
+        int startY = 50;
+        int spacing = 40;
 
         // Columna de enemigos de primer tipo
         for (int i = 0; i < 5; i++) {
@@ -83,9 +86,13 @@ public class GamePanel extends JPanel implements ActionListener {
         }
 
         // Start enemy threads
-        for (Enemy enemy : enemies) {
-            new Thread(enemy).start();
+        for (int i = 0; i < 5; i++) {
+            enemies.add(new EnemyType3(startX + 3 * spacing, startY + i * spacing, this));
+            enemies.add(new EnemyType3(startX + 4 * spacing, startY + i * spacing, this));
         }
+//        for (Enemy enemy : enemies) {
+//            new Thread(enemy).start();
+
     }
 
     public void removeEnemy(Enemy enemy) {
@@ -94,15 +101,33 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
+//    @Override
+//    protected void paintComponent(Graphics g) {
+//        super.paintComponent(g);
+//        //Dibujamos el fondo en el panel
+//        g.drawImage(backgroundGif.getImage(), 0, 0, getWidth(), getHeight(), this);
+//        playerShip.draw(g);
+//        synchronized (enemies) {
+//            for (Enemy enemy : enemies) {
+//                enemy.draw(g);
+//            }
+//        }
+//    }
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        //Dibujamos el fondo en el panel
+        // Dibujar el fondo, nave y enemigos
         g.drawImage(backgroundGif.getImage(), 0, 0, getWidth(), getHeight(), this);
         playerShip.draw(g);
+
         synchronized (enemies) {
-            for (Enemy enemy : enemies) {
+            Iterator<Enemy> iterator = enemies.iterator();
+            while (iterator.hasNext()) {
+                Enemy enemy = iterator.next();
                 enemy.draw(g);
+                if (!enemy.isAlive() && !enemy.isExploding()) {
+                    iterator.remove(); // Eliminar el enemigo si ya no está vivo ni explotando
+                }
             }
         }
     }
@@ -110,10 +135,106 @@ public class GamePanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         playerShip.move();
+        moveEnemies();
         checkCollisions();
         repaint();
     }
-    
+
+    private void moveEnemies() {
+        if (enemies.isEmpty()) {
+            return;
+        }
+
+        boolean atEdge = false;
+
+        // Revisar si hay algún enemigo en el borde superior o inferior
+        for (Enemy enemy : enemies) {
+            if (movingDown) {
+                if (enemy.getY() + enemy.getHeight() + enemySpeed >= getHeight()) {
+                    atEdge = true;
+                    break;
+                }
+            } else {
+                if (enemy.getY() - enemySpeed <= 0) {
+                    atEdge = true;
+                    break;
+                }
+            }
+        }
+
+        // Cambiar dirección si estamos en un borde
+        if (atEdge) {
+            movingDown = !movingDown;
+            verticalMoveComplete = true;
+        }
+
+        // Mover enemigos
+        for (Enemy enemy : enemies) {
+//
+//            if (enemy.isExploding()) {
+//                continue;
+//            }
+            if (verticalMoveComplete) {
+                enemy.moveLeft(enemySpeed);
+            } else {
+                if (movingDown) {
+                    enemy.moveDown(enemySpeed);
+                } else {
+                    enemy.moveUp(enemySpeed);
+                }
+            }
+        }
+
+        verticalMoveComplete = false; // Reiniciar después de mover hacia la izquierda
+    }
+
+//    private void moveEnemies() {
+//        if (enemies.isEmpty()) {
+//            return;
+//        }
+//
+//        int moveSpeed = 1;
+//        if (movingDown) {
+//            boolean atBottomEdge = false;
+//            for (Enemy enemy : enemies) {
+//                if (enemy.getY() + enemy.getHeight() + moveSpeed >= getHeight()) {
+//                    atBottomEdge = true;
+//                    break;
+//                }
+//            }
+//            if (atBottomEdge) {
+//                movingDown = false;
+//                verticalMoveComplete = true;
+//            }
+//        } else {
+//            boolean atTopEdge = false;
+//            for (Enemy enemy : enemies) {
+//                if (enemy.getY() - moveSpeed <= 0) {
+//                    atTopEdge = true;
+//                    break;
+//                }
+//            }
+//            if (atTopEdge) {
+//                movingDown = true;
+//                verticalMoveComplete = true;
+//            }
+//        }
+//
+//        if (verticalMoveComplete) {
+//            for (Enemy enemy : enemies) {
+//                enemy.moveLeft(enemy.getSpeed());
+//            }
+//            verticalMoveComplete = false;
+//        } else {
+//            for (Enemy enemy : enemies) {
+//                if (movingDown) {
+//                    enemy.moveDown(moveSpeed);
+//                } else {
+//                    enemy.moveUp(moveSpeed);
+//                }
+//            }
+//        }
+//    }
     private void checkCollisions() {
         List<Shot> shots = playerShip.getShots();
         synchronized (enemies) {
@@ -130,8 +251,13 @@ public class GamePanel extends JPanel implements ActionListener {
                     if (enemyHitbox.intersects(shotHitbox)) {
                         enemy.hit();
                         shotIterator.remove();
-                        if (!enemy.isAlive()) {
-                            enemyIterator.remove();
+//                        if (!enemy.isAlive()) {
+//                            enemyIterator.remove();
+//                        }
+                    }
+                    if (enemy.isExploding()) {
+                        if (System.currentTimeMillis() - enemy.getExplosionStartTime() > Enemy.getEXPLOSION_DURATION()) {
+                            enemyIterator.remove(); // Eliminamos al enemigo de la lista
                         }
                     }
                 }
