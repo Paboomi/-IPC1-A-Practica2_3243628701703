@@ -31,7 +31,7 @@ public class GamePanel extends JPanel implements ActionListener {
     private List<Enemy> enemies;
     private boolean movingDown = true;
     private boolean verticalMoveComplete = false;
-    private int enemySpeed = 5;
+    private int enemySpeed = 6;
 
     public GamePanel() {
         setPreferredSize(new Dimension(1280, 662));
@@ -64,9 +64,9 @@ public class GamePanel extends JPanel implements ActionListener {
 
     private void initEnemies() {
         // Posicionamos a los enemigos
-        int startX = 1000;
-        int startY = 50;
-        int spacing = 40;
+        int startX = 950;
+        int startY = 10;
+        int spacing = 65;
 
         // Columna de enemigos de primer tipo
         for (int i = 0; i < 5; i++) {
@@ -85,14 +85,6 @@ public class GamePanel extends JPanel implements ActionListener {
             enemies.add(new EnemyType3(startX + 4 * spacing, startY + i * spacing, this));
         }
 
-        // Start enemy threads
-        for (int i = 0; i < 5; i++) {
-            enemies.add(new EnemyType3(startX + 3 * spacing, startY + i * spacing, this));
-            enemies.add(new EnemyType3(startX + 4 * spacing, startY + i * spacing, this));
-        }
-//        for (Enemy enemy : enemies) {
-//            new Thread(enemy).start();
-
     }
 
     public void removeEnemy(Enemy enemy) {
@@ -100,19 +92,6 @@ public class GamePanel extends JPanel implements ActionListener {
             enemies.remove(enemy);
         }
     }
-
-//    @Override
-//    protected void paintComponent(Graphics g) {
-//        super.paintComponent(g);
-//        //Dibujamos el fondo en el panel
-//        g.drawImage(backgroundGif.getImage(), 0, 0, getWidth(), getHeight(), this);
-//        playerShip.draw(g);
-//        synchronized (enemies) {
-//            for (Enemy enemy : enemies) {
-//                enemy.draw(g);
-//            }
-//        }
-//    }
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -170,10 +149,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
         // Mover enemigos
         for (Enemy enemy : enemies) {
-//
-//            if (enemy.isExploding()) {
-//                continue;
-//            }
+            
             if (verticalMoveComplete) {
                 enemy.moveLeft(enemySpeed);
             } else {
@@ -188,53 +164,6 @@ public class GamePanel extends JPanel implements ActionListener {
         verticalMoveComplete = false; // Reiniciar después de mover hacia la izquierda
     }
 
-//    private void moveEnemies() {
-//        if (enemies.isEmpty()) {
-//            return;
-//        }
-//
-//        int moveSpeed = 1;
-//        if (movingDown) {
-//            boolean atBottomEdge = false;
-//            for (Enemy enemy : enemies) {
-//                if (enemy.getY() + enemy.getHeight() + moveSpeed >= getHeight()) {
-//                    atBottomEdge = true;
-//                    break;
-//                }
-//            }
-//            if (atBottomEdge) {
-//                movingDown = false;
-//                verticalMoveComplete = true;
-//            }
-//        } else {
-//            boolean atTopEdge = false;
-//            for (Enemy enemy : enemies) {
-//                if (enemy.getY() - moveSpeed <= 0) {
-//                    atTopEdge = true;
-//                    break;
-//                }
-//            }
-//            if (atTopEdge) {
-//                movingDown = true;
-//                verticalMoveComplete = true;
-//            }
-//        }
-//
-//        if (verticalMoveComplete) {
-//            for (Enemy enemy : enemies) {
-//                enemy.moveLeft(enemy.getSpeed());
-//            }
-//            verticalMoveComplete = false;
-//        } else {
-//            for (Enemy enemy : enemies) {
-//                if (movingDown) {
-//                    enemy.moveDown(moveSpeed);
-//                } else {
-//                    enemy.moveUp(moveSpeed);
-//                }
-//            }
-//        }
-//    }
     private void checkCollisions() {
         List<Shot> shots = playerShip.getShots();
         synchronized (enemies) {
@@ -251,9 +180,6 @@ public class GamePanel extends JPanel implements ActionListener {
                     if (enemyHitbox.intersects(shotHitbox)) {
                         enemy.hit();
                         shotIterator.remove();
-//                        if (!enemy.isAlive()) {
-//                            enemyIterator.remove();
-//                        }
                     }
                     if (enemy.isExploding()) {
                         if (System.currentTimeMillis() - enemy.getExplosionStartTime() > Enemy.getEXPLOSION_DURATION()) {

@@ -52,7 +52,7 @@ public class Enemy implements Runnable, ActionListener{
         this.y = y;
         this.health = health;
         this.points = points;
-        this.speed = 3;
+        this.speed = 5;
         this.alive = true;
         this.exploding = false;
         this.imagePath = imagePath;
@@ -95,14 +95,6 @@ public class Enemy implements Runnable, ActionListener{
         }
     }
 
-
-//    public void draw(Graphics g) {
-//        if (exploding) {
-//            g.drawImage(explosionIcon.getImage(), x, y, null);
-//        } else if (alive) {
-//            g.drawImage(image, x, y, null);
-//        }
-//    }
     public void draw(Graphics g) {
         if (exploding) {
             if (System.currentTimeMillis() - explosionStartTime < EXPLOSION_DURATION) {
@@ -131,16 +123,6 @@ public class Enemy implements Runnable, ActionListener{
         }
     }
 
-
-
-//    public void update() {
-//        if (exploding) {
-//            if (System.currentTimeMillis() - explosionStartTime > EXPLOSION_DURATION) {
-//                exploding = false;
-//                gamePanel.removeEnemy(this);
-//            }
-//        }
-//    }
 
     public Rectangle getHitbox() {
         return new Rectangle(x, y, width, height);
