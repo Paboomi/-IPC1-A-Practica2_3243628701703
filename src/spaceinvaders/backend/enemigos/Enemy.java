@@ -6,9 +6,11 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URL;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import spaceinvaders.Frontend.GamePanel;
 
 public class Enemy implements Runnable {
+
     protected int x, y;
     protected int health;
     protected int points;
@@ -16,11 +18,16 @@ public class Enemy implements Runnable {
     protected boolean alive;
     private boolean exploding;
     protected Image image;
-    protected Image explosionImage;
+    protected ImageIcon explosionIcon;
     protected int width, height;
     protected String imagePath;
     protected String explosionPath = "spaceinvaders/Images/explosion1.gif"; // Placeholder path for explosion image
     protected GamePanel gamePanel;
+    private long explosionStartTime;
+    private static final int EXPLOSION_DURATION = 1000; // 1 second
+    private boolean movingDown;
+    private static final int MOVE_DISTANCE = 20; // Distance to move down when hitting a boundary
+
 
     public Enemy(int x, int y, int health, int points, int speed, String imagePath, GamePanel gamePanel) {
         this.x = x;
@@ -32,10 +39,11 @@ public class Enemy implements Runnable {
         this.exploding = false;
         this.imagePath = imagePath;
         this.gamePanel = gamePanel;
+        this.movingDown = false;
         loadImage();
     }
 
-protected void loadImage() {
+    protected void loadImage() {
         try {
             URL url = getClass().getClassLoader().getResource(imagePath);
             if (url == null) {
@@ -44,33 +52,38 @@ protected void loadImage() {
             image = ImageIO.read(url);
             width = image.getWidth(null);
             height = image.getHeight(null);
-            
+
             URL explosionUrl = getClass().getClassLoader().getResource(explosionPath);
             if (explosionUrl == null) {
                 throw new IOException("Explosion image not found: " + explosionPath);
             }
-            explosionImage = ImageIO.read(explosionUrl);
+            explosionIcon = new ImageIcon(explosionUrl);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void draw(Graphics g) {
-        if (alive) {
+        if (exploding) {
+            g.drawImage(explosionIcon.getImage(), x, y, null);
+        } else if (alive) {
             g.drawImage(image, x, y, null);
-        } else {
-            g.drawImage(explosionImage, x, y, null);
         }
     }
 
-    public void move() {
+     public void move() {
         if (alive) {
-            x -= speed;
-            // Movimiento vertical alternativo
-            if (y <= 0 || y >= gamePanel.getHeight() - height) {
-                speed = -speed;
+            if (movingDown) {
+                y += speed;
+                if (y + height >= gamePanel.getHeight() || y <= 0) {
+                    movingDown = false;
+                }
+            } else {
+                x -= speed;
+                if (x <= 0) {
+                    movingDown = true;
+                }
             }
-            y += speed;
         }
     }
 
@@ -78,14 +91,8 @@ protected void loadImage() {
         health--;
         if (health <= 0) {
             alive = false;
-            new Thread(() -> {
-                try {
-                    Thread.sleep(200); // Espera 0.2 segundos antes de desaparecer
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                gamePanel.removeEnemy(this);
-            }).start();
+            exploding = true;
+            explosionStartTime = System.currentTimeMillis();
         }
     }
 
@@ -95,13 +102,20 @@ protected void loadImage() {
 
     @Override
     public void run() {
-        while (alive) {
+        while (alive || exploding) {
             move();
+            if (exploding) {
+                if (System.currentTimeMillis() - explosionStartTime > EXPLOSION_DURATION) {
+                    exploding = false;
+                    gamePanel.removeEnemy(this);
+                }
+            }
             try {
-                Thread.sleep(40); // Ajustar para la velocidad de movimiento
+                Thread.sleep(50); // Ajustar para la velocidad de movimiento
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            gamePanel.repaint();
         }
     }
 
@@ -112,5 +126,10 @@ protected void loadImage() {
     public int getPoints() {
         return points;
     }
-}
 
+    public boolean isExploding() {
+        return exploding;
+    }
+    
+    
+}
