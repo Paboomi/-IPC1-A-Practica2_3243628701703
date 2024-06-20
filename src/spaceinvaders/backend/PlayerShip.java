@@ -7,14 +7,16 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 
-public class PlayerShip implements Serializable{
-
+public class PlayerShip implements Serializable {
+private static final long serialVersionUID = 5L;
     private int x, y;
     private int width, height;
     private int speed;
@@ -32,15 +34,15 @@ public class PlayerShip implements Serializable{
         this.speed = 5;
         this.shots = new ArrayList<>();
         this.canShoot = true;
-        loadImage();
+        loadImage(PATH_NAVE_PLAYER);
     }
 
     //Cargamos la imagen de la nave desde la ruta predefinida
-    private void loadImage() {
+    private void loadImage(String imagePath) {
         try {
-            URL url = getClass().getClassLoader().getResource(PATH_NAVE_PLAYER);
+            URL url = getClass().getClassLoader().getResource(imagePath);
             if (url == null) {
-                throw new IOException("Image not found: " + PATH_NAVE_PLAYER);
+                throw new IOException("Image not found: " + imagePath);
             }
             image = ImageIO.read(url);
             width = image.getWidth(null);
@@ -103,11 +105,11 @@ public class PlayerShip implements Serializable{
         if (key == KeyEvent.VK_DOWN) {
             moveDown = false;
         }
-         if (key == KeyEvent.VK_SPACE) {
+        if (key == KeyEvent.VK_SPACE) {
             canShoot = true;
         }
     }
-    
+
     //Aregamos disparos a la lista
     private void shoot() {
         shots.add(new Shot(x + width, y + height / 2));
@@ -121,6 +123,18 @@ public class PlayerShip implements Serializable{
     public List<Shot> getShots() {
         return shots;
     }
-    
-    
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        // Serializar la imagen a través de la ruta o una representación serializable si es posible
+        out.writeObject(PATH_NAVE_PLAYER);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        // Leer la imagen a través de la ruta o una representación serializada si es posible
+        String imagePath = (String) in.readObject();
+        loadImage(imagePath);
+    }
+
 }

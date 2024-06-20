@@ -3,9 +3,12 @@ package spaceinvaders.frontend;
 import java.awt.CardLayout;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import spaceinvaders.backend.files.GameState;
 import spaceinvaders.backend.files.GameStateManager;
 
 /**
@@ -16,11 +19,13 @@ public class Principal extends javax.swing.JFrame {
 
     private String PATH_BACKGROUND_GIF = "spaceinvaders/Images";
     private ImageIcon img = new ImageIcon(PATH_BACKGROUND_GIF);
-    private File archivoSeleccionado;
+    private String archivoSeleccionado;
+    private GamePanel gamePanel;
+    private SpaceInvaders spaceInvaders;
 
     public Principal() {
         initComponents();
-
+        gamePanel = new GamePanel(this);
         btn_NewGame.setBorderPainted(false);
         btn_NewGame.setFocusPainted(false);
 
@@ -109,41 +114,41 @@ public class Principal extends javax.swing.JFrame {
         pnlMenuPrincipalLayout.setHorizontalGroup(
             pnlMenuPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlMenuPrincipalLayout.createSequentialGroup()
-                .addGroup(pnlMenuPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlMenuPrincipalLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(lblTitulo, javax.swing.GroupLayout.DEFAULT_SIZE, 513, Short.MAX_VALUE))
-                    .addGroup(pnlMenuPrincipalLayout.createSequentialGroup()
-                        .addGap(158, 158, 158)
-                        .addGroup(pnlMenuPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btn_PuntajeMaximo)
-                            .addComponent(btn_NewGame, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap()
+                .addComponent(lblTitulo, javax.swing.GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlMenuPrincipalLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(pnlMenuPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btn_NewGame, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnlMenuPrincipalLayout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(btn_Continuar)))
+                .addGap(173, 173, 173))
+            .addGroup(pnlMenuPrincipalLayout.createSequentialGroup()
                 .addGroup(pnlMenuPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlMenuPrincipalLayout.createSequentialGroup()
-                        .addComponent(btn_Salir)
-                        .addGap(208, 208, 208))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlMenuPrincipalLayout.createSequentialGroup()
-                        .addComponent(btn_Continuar)
-                        .addGap(179, 179, 179))))
+                    .addGroup(pnlMenuPrincipalLayout.createSequentialGroup()
+                        .addGap(150, 150, 150)
+                        .addComponent(btn_PuntajeMaximo))
+                    .addGroup(pnlMenuPrincipalLayout.createSequentialGroup()
+                        .addGap(210, 210, 210)
+                        .addComponent(btn_Salir)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlMenuPrincipalLayout.setVerticalGroup(
             pnlMenuPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlMenuPrincipalLayout.createSequentialGroup()
                 .addGap(39, 39, 39)
                 .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(97, 97, 97)
+                .addGap(100, 100, 100)
                 .addComponent(btn_NewGame, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21)
+                .addGap(18, 18, 18)
                 .addComponent(btn_Continuar)
                 .addGap(18, 18, 18)
                 .addComponent(btn_PuntajeMaximo, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btn_Salir)
-                .addContainerGap(103, Short.MAX_VALUE))
+                .addContainerGap(146, Short.MAX_VALUE))
         );
 
         getContentPane().add(pnlMenuPrincipal, "pnlMenuPrincipal");
@@ -197,12 +202,12 @@ public class Principal extends javax.swing.JFrame {
                     .addGroup(pnlCargarPartidaLayout.createSequentialGroup()
                         .addGap(185, 185, 185)
                         .addComponent(btn_Back)))
-                .addContainerGap(181, Short.MAX_VALUE))
+                .addContainerGap(180, Short.MAX_VALUE))
         );
         pnlCargarPartidaLayout.setVerticalGroup(
             pnlCargarPartidaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCargarPartidaLayout.createSequentialGroup()
-                .addContainerGap(197, Short.MAX_VALUE)
+                .addContainerGap(240, Short.MAX_VALUE)
                 .addComponent(btn_BuscarJuego, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(100, 100, 100)
                 .addComponent(btn_CargarJuego, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -218,8 +223,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void btn_NewGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_NewGameActionPerformed
         this.setVisible(false);
-        SpaceInvaders spaceInvaders = new SpaceInvaders(this);
-
+        SpaceInvaders spaceInvaders = new SpaceInvaders(this, gamePanel);
     }//GEN-LAST:event_btn_NewGameActionPerformed
 
     private void btn_ContinuarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ContinuarActionPerformed
@@ -231,50 +235,27 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_BackActionPerformed
 
     private void btn_BuscarJuegoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BuscarJuegoActionPerformed
-// Crear el JFileChooser
         JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File("src/spaceinvaders/Juegos")); // Directorio inicial
+        int result = fileChooser.showOpenDialog(this); // Mostrar el diálogo de selección de archivo
 
-        // Establecer el directorio predeterminado
-        fileChooser.setCurrentDirectory(new File("spaceinvaders/Juego"));
-
-        // Establecer el título del diálogo
-        fileChooser.setDialogTitle("Selecciona una Partida");
-
-        // Establecer el filtro de archivos para mostrar solo archivos
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        // Mostrar el diálogo de archivo abierto
-        int result = fileChooser.showOpenDialog(this);
-
-        // Si el usuario seleccionó un archivo, guardar la ruta del archivo seleccionado
         if (result == JFileChooser.APPROVE_OPTION) {
-            archivoSeleccionado = fileChooser.getSelectedFile();
+            File selectedFile = fileChooser.getSelectedFile();
+            String filename = selectedFile.getAbsolutePath();
+
+            // Llamar al método para cargar el estado del juego
+            GameStateManager.loadGameState(filename, gamePanel); // Asegúrate de que gamePanel esté inicializado
+            this.setVisible(false);
+            SpaceInvaders spaceInvaders = new SpaceInvaders(this, gamePanel);
+//            spaceInvaders.setVisible(true);
+        } else if (result == JFileChooser.CANCEL_OPTION) {
+            System.out.println("Selección de archivo cancelada.");
         }
     }//GEN-LAST:event_btn_BuscarJuegoActionPerformed
 
     private void btn_CargarJuegoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CargarJuegoActionPerformed
-        if (archivoSeleccionado != null) {
-            try {
-                ObjectInputStream in = new ObjectInputStream(new FileInputStream(archivoSeleccionado));
-                GameState gameState = (GameState) in.readObject();
-                in.close();
 
-                // Cargar el estado del juego en el GamePanel
-                GamePanel gamePanel = new GamePanel(this);
-                gamePanel.loadGameState(gameState);
 
-                // Mostrar el panel del juego
-                this.setContentPane(gamePanel);
-                this.revalidate();
-                this.repaint();
-
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Error al cargar el archivo de juego.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Por favor, selecciona un archivo de juego primero.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-        }
     }//GEN-LAST:event_btn_CargarJuegoActionPerformed
 // Método para mostrar un panel específico
 

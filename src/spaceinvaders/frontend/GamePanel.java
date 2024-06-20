@@ -20,6 +20,7 @@ import spaceinvaders.backend.Contador;
 import spaceinvaders.backend.PlayerShip;
 import spaceinvaders.backend.Shot;
 import spaceinvaders.backend.enemigos.*;
+import spaceinvaders.backend.files.GameState;
 import spaceinvaders.backend.files.GameStateManager;
 import spaceinvaders.backend.items.*;
 import spaceinvaders.backend.jugador.Jugador;
@@ -42,12 +43,14 @@ public class GamePanel extends JPanel implements ActionListener {
     private Jugador jugador;
     private List<Item> items;
     private Principal principal;
+    private SpaceInvaders spaceInvaders;
     private List<Shot> shots;
 
     public GamePanel(Principal principal) {
         setPreferredSize(new Dimension(1280, 662));
         setBackground(Color.BLACK);
         this.principal = principal;
+        this.spaceInvaders = spaceInvaders;
         playerShip = new PlayerShip(50, 300); // Posición inicial de la nave
 
         backgroundGif = new ImageIcon(getClass().getClassLoader().getResource(PATH_BACKGROUND));
@@ -77,8 +80,8 @@ public class GamePanel extends JPanel implements ActionListener {
         initEnemies();
         initItems();
     }
-    
-     private void handleKeyPress(KeyEvent e) {
+
+    private void handleKeyPress(KeyEvent e) {
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_ESCAPE) {
             closeGame();
@@ -86,13 +89,57 @@ public class GamePanel extends JPanel implements ActionListener {
             GameStateManager.saveGameState(playerShip, enemies, contador, jugador, items, shots);
         }
     }
-     private void closeGame() {
+
+    private void closeGame() {
         timer.stop();
         principal.setVisible(true);
         SwingUtilities.getWindowAncestor(this).dispose();
     }
 
+    public void loadGameState(GameState gameState) {
+        if (gameState == null) {
+            System.out.println("Error: GameState is null.");
+            return;
+        }
 
+        // Set player ship
+        setPlayerShip(gameState.getPlayerShip());
+
+        // Set enemies
+        setEnemies(gameState.getEnemies());
+
+        // Set contador
+        setContador(gameState.getContador());
+
+        // Set jugador
+        setJugador(gameState.getJugador());
+
+        // Set items
+        setItems(gameState.getItems());
+
+        // Set shots
+        setShots(gameState.getShots());
+
+        // Restart timer if needed
+        if (!timer.isRunning()) {
+            timer.start();
+        }
+
+        // Repaint the panel to reflect loaded state
+        repaint();
+
+        System.out.println("Game state loaded successfully.");
+    }
+
+    public SpaceInvaders getSpaceInvaders() {
+        return spaceInvaders;
+    }
+
+    public void setSpaceInvaders(SpaceInvaders spaceInvaders) {
+        this.spaceInvaders = spaceInvaders;
+    }
+    
+    
 
     private void initItems() {
         Timer itemTimer = new Timer(5000, new ActionListener() {
@@ -206,7 +253,7 @@ public class GamePanel extends JPanel implements ActionListener {
             }
         }
     }
-    
+
     private void moveShots() {
         Iterator<Shot> iterator = shots.iterator();
         while (iterator.hasNext()) {
@@ -303,7 +350,6 @@ public class GamePanel extends JPanel implements ActionListener {
         return contador;
     }
 
-    
     // Getters y setters necesarios para la deserialización
     public void setPlayerShip(PlayerShip playerShip) {
         this.playerShip = playerShip;

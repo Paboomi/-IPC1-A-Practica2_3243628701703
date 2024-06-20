@@ -39,6 +39,7 @@ public class Enemy implements Runnable, ActionListener, Serializable {
     private transient Timer explosionTimer;
 
     public Enemy(int x, int y, int health, int points, int speed, String imagePath, GamePanel gamePanel) {
+       
         this.x = x;
         this.y = y;
         this.health = health;
@@ -198,6 +199,10 @@ public class Enemy implements Runnable, ActionListener, Serializable {
         ois.defaultReadObject();
         loadImage(); // Re-load image after deserialization
         initExplosionTimer(); // Re-initialize the explosion timer
+    }
+
+    public void setGamePanel(GamePanel gamePanel) {
+        this.gamePanel = gamePanel;
     }
 
 }
