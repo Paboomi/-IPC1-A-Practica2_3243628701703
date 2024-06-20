@@ -106,6 +106,11 @@ public class Principal extends javax.swing.JFrame {
         btn_Salir.setBorderPainted(false);
         btn_Salir.setContentAreaFilled(false);
         btn_Salir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_Salir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_SalirActionPerformed(evt);
+            }
+        });
 
         lblTitulo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/spaceinvaders/Images/titulo.png"))); // NOI18N
 
@@ -194,10 +199,10 @@ public class Principal extends javax.swing.JFrame {
             pnlCargarPartidaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCargarPartidaLayout.createSequentialGroup()
                 .addGroup(pnlCargarPartidaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlCargarPartidaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(btn_BuscarJuego)
-                        .addGroup(pnlCargarPartidaLayout.createSequentialGroup()
-                            .addGap(164, 164, 164)
+                    .addGroup(pnlCargarPartidaLayout.createSequentialGroup()
+                        .addGap(164, 164, 164)
+                        .addGroup(pnlCargarPartidaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btn_BuscarJuego)
                             .addComponent(btn_CargarJuego, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(pnlCargarPartidaLayout.createSequentialGroup()
                         .addGap(185, 185, 185)
@@ -259,6 +264,10 @@ public class Principal extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_btn_CargarJuegoActionPerformed
+
+    private void btn_SalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SalirActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_btn_SalirActionPerformed
 // Método para mostrar un panel específico
 
     public void mostrarPanel(String panelName) {
