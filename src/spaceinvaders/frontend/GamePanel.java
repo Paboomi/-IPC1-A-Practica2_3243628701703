@@ -8,16 +8,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import spaceinvaders.backend.Contador;
 import spaceinvaders.backend.PlayerShip;
 import spaceinvaders.backend.Shot;
 import spaceinvaders.backend.enemigos.*;
+import spaceinvaders.backend.files.GameStateManager;
 import spaceinvaders.backend.items.*;
 import spaceinvaders.backend.jugador.Jugador;
 
@@ -29,7 +32,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
     private PlayerShip playerShip;
     private Timer timer;
-    private ImageIcon backgroundGif;
+    private transient ImageIcon backgroundGif;
     private String PATH_BACKGROUND = "spaceinvaders/Images/space2.gif";
     private List<Enemy> enemies;
     private boolean movingDown = true;
@@ -38,10 +41,13 @@ public class GamePanel extends JPanel implements ActionListener {
     private Contador contador;
     private Jugador jugador;
     private List<Item> items;
+    private Principal principal;
+    private List<Shot> shots;
 
-    public GamePanel() {
+    public GamePanel(Principal principal) {
         setPreferredSize(new Dimension(1280, 662));
         setBackground(Color.BLACK);
+        this.principal = principal;
         playerShip = new PlayerShip(50, 300); // Posición inicial de la nave
 
         backgroundGif = new ImageIcon(getClass().getClassLoader().getResource(PATH_BACKGROUND));
@@ -50,6 +56,7 @@ public class GamePanel extends JPanel implements ActionListener {
             @Override
             public void keyPressed(KeyEvent e) {
                 playerShip.keyPressed(e);
+                handleKeyPress(e);
             }
 
             @Override
@@ -66,9 +73,26 @@ public class GamePanel extends JPanel implements ActionListener {
 
         enemies = new ArrayList<>();
         items = new ArrayList<>();
+        shots = new ArrayList<>();
         initEnemies();
         initItems();
     }
+    
+     private void handleKeyPress(KeyEvent e) {
+        int key = e.getKeyCode();
+        if (key == KeyEvent.VK_ESCAPE) {
+            closeGame();
+        } else if (key == KeyEvent.VK_S) {
+            GameStateManager.saveGameState(playerShip, enemies, contador, jugador, items, shots);
+        }
+    }
+     private void closeGame() {
+        timer.stop();
+        principal.setVisible(true);
+        SwingUtilities.getWindowAncestor(this).dispose();
+    }
+
+
 
     private void initItems() {
         Timer itemTimer = new Timer(5000, new ActionListener() {
@@ -107,7 +131,7 @@ public class GamePanel extends JPanel implements ActionListener {
         // Posicionamos a los enemigos
         int startX = 950;
         int startY = 10;
-        int spacing = 65;
+        int spacing = 70;
 
         // Columna de enemigos de primer tipo
         for (int i = 0; i < 5; i++) {
@@ -151,10 +175,14 @@ public class GamePanel extends JPanel implements ActionListener {
                 }
             }
         }
-        
+
         // Dibujar ítems
         for (Item item : items) {
             item.draw(g);
+        }
+        // Dibujar balas
+        for (Shot shot : shots) {
+            shot.draw(g);
         }
     }
 
@@ -164,6 +192,7 @@ public class GamePanel extends JPanel implements ActionListener {
         moveEnemies();
         checkCollisions();
         moveItems();
+        moveShots();
         repaint();
     }
 
@@ -173,6 +202,17 @@ public class GamePanel extends JPanel implements ActionListener {
             Item item = iterator.next();
             item.move();
             if (!item.isActive()) {
+                iterator.remove();
+            }
+        }
+    }
+    
+    private void moveShots() {
+        Iterator<Shot> iterator = shots.iterator();
+        while (iterator.hasNext()) {
+            Shot shot = iterator.next();
+            shot.move();
+            if (!shot.isVisible()) {
                 iterator.remove();
             }
         }
@@ -223,6 +263,7 @@ public class GamePanel extends JPanel implements ActionListener {
         verticalMoveComplete = false; // Reiniciar después de mover hacia la izquierda
     }
 
+    //Evaluamos las colisiones
     private void checkCollisions() {
         List<Shot> shots = playerShip.getShots();
         synchronized (enemies) {
@@ -235,16 +276,14 @@ public class GamePanel extends JPanel implements ActionListener {
                 while (shotIterator.hasNext()) {
                     Shot shot = shotIterator.next();
                     Rectangle shotHitbox = shot.getHitbox();
-
-                    if (enemyHitbox.intersects(shotHitbox)) {
-                        enemy.hit();
-                        shotIterator.remove();
-                    }
-                    if (enemy.isExploding()) {
-                        if (System.currentTimeMillis() - enemy.getExplosionStartTime() > Enemy.getEXPLOSION_DURATION()) {
-                            enemyIterator.remove(); // Eliminamos al enemigo de la lista
+                    // Chequea si la bala está en la misma columna que el enemigo
+                    if (shotHitbox.x >= enemyHitbox.x && shotHitbox.x <= enemyHitbox.x + enemyHitbox.width) {
+                        if (enemyHitbox.intersects(shotHitbox)) {
+                            enemy.hit(jugador);
+                            shotIterator.remove();
                         }
                     }
+
                 }
             }
         }
@@ -264,19 +303,30 @@ public class GamePanel extends JPanel implements ActionListener {
         return contador;
     }
 
+    
+    // Getters y setters necesarios para la deserialización
+    public void setPlayerShip(PlayerShip playerShip) {
+        this.playerShip = playerShip;
+    }
+
+    public void setEnemies(List<Enemy> enemies) {
+        this.enemies = enemies;
+    }
+
     public void setContador(Contador contador) {
         this.contador = contador;
     }
 
-//    public void addTime(int seconds) {
-//        contador.addTime(seconds);
-//    }
-//
-//    public void addPoints(int points) {
-//        playerShip.addPoints(points); // Suponiendo que PlayerShip tiene un método para agregar puntos
-//    }
     public void setJugador(Jugador jugador) {
         this.jugador = jugador;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    public void setShots(List<Shot> shots) {
+        this.shots = shots;
     }
 
 }

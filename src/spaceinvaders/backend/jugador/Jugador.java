@@ -1,12 +1,13 @@
 package spaceinvaders.backend.jugador;
 
+import java.io.Serializable;
 import spaceinvaders.frontend.util.ActualizarScore;
 
 /**
  *
  * @author saien
  */
-public class Jugador{
+public class Jugador implements Serializable{
 
     private int puntaje;
     private String nombre;

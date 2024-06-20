@@ -7,18 +7,19 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 
-public class PlayerShip {
+public class PlayerShip implements Serializable{
 
     private int x, y;
     private int width, height;
     private int speed;
     private boolean moveUp, moveDown;
-    private Image image;
+    private transient Image image;
     private String PATH_NAVE_PLAYER = "spaceinvaders/Images/nave2x65.png";
     private List<Shot> shots;
     private boolean canShoot;

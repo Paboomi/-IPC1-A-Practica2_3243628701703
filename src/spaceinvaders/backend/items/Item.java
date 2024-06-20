@@ -5,20 +5,18 @@ package spaceinvaders.backend.items;
  * @author saien
  */
 import java.awt.*;
-import java.awt.image.ImageObserver;
 import java.io.IOException;
+import java.io.Serializable;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import spaceinvaders.backend.Contador;
 import spaceinvaders.frontend.GamePanel;
-import spaceinvaders.backend.PlayerShip;
 import spaceinvaders.backend.jugador.Jugador;
 
-public abstract class Item {
+public abstract class Item implements Serializable{
 
     protected int x, y, speed;
     protected boolean active;
-    protected Image image;
+    protected transient Image image;
     protected int width, height;
     protected GamePanel gamePanel;
 

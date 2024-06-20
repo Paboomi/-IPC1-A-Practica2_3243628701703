@@ -1,6 +1,7 @@
 package spaceinvaders.frontend;
 
 import javax.swing.ImageIcon;
+import spaceinvaders.backend.files.GameStateManager;
 
 /**
  *
@@ -23,6 +24,7 @@ public class Principal extends javax.swing.JFrame {
         
         btn_Salir.setBorderPainted(false);
         btn_Salir.setFocusPainted(false);
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
@@ -54,6 +56,11 @@ public class Principal extends javax.swing.JFrame {
         btn_NewGame.setContentAreaFilled(false);
         btn_NewGame.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btn_NewGame.setOpaque(true);
+        btn_NewGame.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_NewGameActionPerformed(evt);
+            }
+        });
 
         btn_Continuar.setBackground(new java.awt.Color(0, 0, 0));
         btn_Continuar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/spaceinvaders/Images/btn_Continuar.png"))); // NOI18N
@@ -61,6 +68,11 @@ public class Principal extends javax.swing.JFrame {
         btn_Continuar.setBorderPainted(false);
         btn_Continuar.setContentAreaFilled(false);
         btn_Continuar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_Continuar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_ContinuarActionPerformed(evt);
+            }
+        });
 
         btn_PuntajeMaximo.setBackground(new java.awt.Color(0, 0, 0));
         btn_PuntajeMaximo.setForeground(new java.awt.Color(255, 255, 255));
@@ -134,6 +146,16 @@ public class Principal extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btn_NewGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_NewGameActionPerformed
+        this.setVisible(false);
+        SpaceInvaders spaceInvaders = new SpaceInvaders(this);
+        
+    }//GEN-LAST:event_btn_NewGameActionPerformed
+
+    private void btn_ContinuarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ContinuarActionPerformed
+//        GameStateManager.loadGameState(PATH_BACKGROUND_GIF, gamePanel);
+    }//GEN-LAST:event_btn_ContinuarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -1,21 +1,7 @@
 package spaceinvaders.backend.enemigos;
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.io.IOException;
-import java.net.URL;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import spaceinvaders.frontend.GamePanel;
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.io.IOException;
-import java.net.URL;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -23,12 +9,14 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.Timer;
+import spaceinvaders.backend.jugador.Jugador;
 
-public class Enemy implements Runnable, ActionListener{
+public class Enemy implements Runnable, ActionListener, Serializable{
 
     protected int x, y;
     protected int health;
@@ -36,14 +24,14 @@ public class Enemy implements Runnable, ActionListener{
     protected int speed;
     protected boolean alive;
     private boolean exploding;
-    protected Image image;
-    protected ImageIcon explosionIcon;
+    protected transient Image image;
+    protected transient ImageIcon explosionIcon;
     protected int width, height;
     protected String imagePath;
     protected String explosionPath = "spaceinvaders/Images/explosion1.gif"; // Placeholder path for explosion image
     protected GamePanel gamePanel;
     private long explosionStartTime;
-    private static final int EXPLOSION_DURATION = 300; // 1 second
+    private static final int EXPLOSION_DURATION = 300; // 300 ms
     private boolean movingDown;
     private Timer explosionTimer;
 
@@ -107,14 +95,19 @@ public class Enemy implements Runnable, ActionListener{
         }
     }
 
-    public void hit() {
+    public void hit(Jugador jugador) {
         health--;
         if (health <= 0) {
+            darPuntos(jugador);
             alive = false;
             exploding = true;
             explosionStartTime = System.currentTimeMillis();
             explosionTimer.start();
         }
+    }
+    
+    public void darPuntos(Jugador jugador){
+        jugador.incrementPoints(points);
     }
     
     public void move() {

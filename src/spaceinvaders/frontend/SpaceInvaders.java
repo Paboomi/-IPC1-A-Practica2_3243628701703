@@ -11,12 +11,14 @@ public class SpaceInvaders extends javax.swing.JFrame implements ActualizarScore
 
     private Contador contador;
     private Jugador jugador;
+    private Principal principal;
 
-    public SpaceInvaders() {
+    public SpaceInvaders(Principal principal) {
         initComponents();
+        this.principal = principal;
         jugador = new Jugador();
-        jugador.
-        GamePanel gamePanel = new GamePanel();
+        jugador.setObservador(this);
+        GamePanel gamePanel = new GamePanel(this.principal);
         pnlJuego.setLayout(new BorderLayout());
         pnlJuego.add(gamePanel, BorderLayout.CENTER);
 
