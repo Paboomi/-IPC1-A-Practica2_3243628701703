@@ -2,13 +2,14 @@ package spaceinvaders.backend.enemigos;
 
 import spaceinvaders.frontend.GamePanel;
 
-
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.URL;
 import javax.imageio.ImageIO;
@@ -16,7 +17,9 @@ import javax.swing.ImageIcon;
 import javax.swing.Timer;
 import spaceinvaders.backend.jugador.Jugador;
 
-public class Enemy implements Runnable, ActionListener, Serializable{
+public class Enemy implements Runnable, ActionListener, Serializable {
+
+    private static final long serialVersionUID = 1L; // Añadir serialVersionUID
 
     protected int x, y;
     protected int health;
@@ -29,11 +32,11 @@ public class Enemy implements Runnable, ActionListener, Serializable{
     protected int width, height;
     protected String imagePath;
     protected String explosionPath = "spaceinvaders/Images/explosion1.gif"; // Placeholder path for explosion image
-    protected GamePanel gamePanel;
+    protected transient GamePanel gamePanel;
     private long explosionStartTime;
     private static final int EXPLOSION_DURATION = 300; // 300 ms
     private boolean movingDown;
-    private Timer explosionTimer;
+    private transient Timer explosionTimer;
 
     public Enemy(int x, int y, int health, int points, int speed, String imagePath, GamePanel gamePanel) {
         this.x = x;
@@ -69,12 +72,12 @@ public class Enemy implements Runnable, ActionListener, Serializable{
             e.printStackTrace();
         }
     }
-    
+
     private void initExplosionTimer() {
         explosionTimer = new Timer(EXPLOSION_DURATION, this);
         explosionTimer.setRepeats(false); // No repetir después de una sola ejecución
     }
-    
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == explosionTimer) {
@@ -105,22 +108,21 @@ public class Enemy implements Runnable, ActionListener, Serializable{
             explosionTimer.start();
         }
     }
-    
-    public void darPuntos(Jugador jugador){
+
+    public void darPuntos(Jugador jugador) {
         jugador.incrementPoints(points);
     }
-    
+
     public void move() {
         if (alive) {
             x -= speed; // Movimiento hacia la izquierda
         }
     }
 
-
     public Rectangle getHitbox() {
         return new Rectangle(x, y, width, height);
     }
-    
+
     @Override
     public void run() {
         while (alive || exploding) {
@@ -138,7 +140,6 @@ public class Enemy implements Runnable, ActionListener, Serializable{
             }
         }
     }
-
 
     public boolean isAlive() {
         return alive;
@@ -167,6 +168,7 @@ public class Enemy implements Runnable, ActionListener, Serializable{
     public int getSpeed() {
         return speed;
     }
+
     public void moveDown(int speed) {
         this.y += speed;
     }
@@ -187,5 +189,15 @@ public class Enemy implements Runnable, ActionListener, Serializable{
         return EXPLOSION_DURATION;
     }
     
-    
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+        // No serialize `image` and `explosionIcon` as they are transient
+    }
+
+    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+        ois.defaultReadObject();
+        loadImage(); // Re-load image after deserialization
+        initExplosionTimer(); // Re-initialize the explosion timer
+    }
+
 }

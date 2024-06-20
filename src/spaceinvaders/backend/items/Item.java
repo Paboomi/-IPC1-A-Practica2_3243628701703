@@ -6,6 +6,8 @@ package spaceinvaders.backend.items;
  */
 import java.awt.*;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import javax.imageio.ImageIO;
 import spaceinvaders.backend.Contador;
@@ -18,7 +20,8 @@ public abstract class Item implements Serializable{
     protected boolean active;
     protected transient Image image;
     protected int width, height;
-    protected GamePanel gamePanel;
+    protected transient GamePanel gamePanel;
+    protected String imagePath;
 
     public Item(int x, int y, int speed, String imagePath, GamePanel gamePanel) {
         this.x = x;
@@ -26,6 +29,7 @@ public abstract class Item implements Serializable{
         this.speed = speed;
         this.active = true;
         this.gamePanel = gamePanel;
+        this.imagePath = imagePath;
         loadImage(imagePath);
     }
 
@@ -60,5 +64,14 @@ public abstract class Item implements Serializable{
     }
 
     public abstract void applyEffect(Jugador jugador, Contador contador);
+    
+     private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+        ois.defaultReadObject();
+        loadImage(imagePath);
+    }
 }
 

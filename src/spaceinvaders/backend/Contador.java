@@ -2,6 +2,9 @@ package spaceinvaders.backend;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import javax.swing.Timer;
 import spaceinvaders.frontend.util.ActualizarTimer;
@@ -12,13 +15,16 @@ import spaceinvaders.frontend.util.ActualizarTimer;
  */
 public class Contador implements Serializable {
 
+    private static final long serialVersionUID = 2L;
+
     private int count;
-    private Timer timer;
-    private ActionListener onTick;
-    private Runnable onFinish;
-    private ActualizarTimer observador;
+    private transient Timer timer;
+    private transient ActionListener onTick;
+    private transient Runnable onFinish;
+    private transient ActualizarTimer observador;
 
     public Contador(int startCont, ActionListener onTick, Runnable onFinish) {
+
         this.count = startCont;
         this.onTick = onTick;
         this.onFinish = onFinish;
@@ -45,7 +51,7 @@ public class Contador implements Serializable {
         }
         updateTimer();
     }
-    
+
     public void decrementTime(int seconds) {
         count -= seconds;
         // Si se añade tiempo cuando el contador estaba en 0 y ya había terminado, se reinicia
@@ -69,6 +75,30 @@ public class Contador implements Serializable {
 
     public int getCount() {
         return count;
+    }
+
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+        ois.defaultReadObject();
+        timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                count--;
+                if (count >= 0) {
+                    if (onTick != null) {
+                        onTick.actionPerformed(e);
+                    }
+                } else {
+                    timer.stop();
+                    if (onFinish != null) {
+                        onFinish.run();
+                    }
+                }
+            }
+        });
     }
 
 }

@@ -1,6 +1,11 @@
 package spaceinvaders.frontend;
 
+import java.awt.CardLayout;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import spaceinvaders.backend.files.GameStateManager;
 
 /**
@@ -8,20 +13,23 @@ import spaceinvaders.backend.files.GameStateManager;
  * @author saien
  */
 public class Principal extends javax.swing.JFrame {
+
     private String PATH_BACKGROUND_GIF = "spaceinvaders/Images";
     private ImageIcon img = new ImageIcon(PATH_BACKGROUND_GIF);
+    private File archivoSeleccionado;
+
     public Principal() {
         initComponents();
-        
+
         btn_NewGame.setBorderPainted(false);
         btn_NewGame.setFocusPainted(false);
-        
+
         btn_Continuar.setBorderPainted(false);
         btn_Continuar.setFocusPainted(false);
-        
+
         btn_PuntajeMaximo.setBorderPainted(false);
         btn_PuntajeMaximo.setFocusPainted(false);
-        
+
         btn_Salir.setBorderPainted(false);
         btn_Salir.setFocusPainted(false);
         setLocationRelativeTo(null);
@@ -43,8 +51,13 @@ public class Principal extends javax.swing.JFrame {
         btn_PuntajeMaximo = new javax.swing.JButton();
         btn_Salir = new javax.swing.JButton();
         lblTitulo = new javax.swing.JLabel();
+        pnlCargarPartida = new javax.swing.JPanel();
+        btn_BuscarJuego = new javax.swing.JButton();
+        btn_CargarJuego = new javax.swing.JButton();
+        btn_Back = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new java.awt.CardLayout());
 
         pnlMenuPrincipal.setBackground(new java.awt.Color(0, 0, 0));
 
@@ -133,16 +146,72 @@ public class Principal extends javax.swing.JFrame {
                 .addContainerGap(103, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnlMenuPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        getContentPane().add(pnlMenuPrincipal, "pnlMenuPrincipal");
+
+        pnlCargarPartida.setBackground(new java.awt.Color(0, 0, 0));
+        pnlCargarPartida.setPreferredSize(new java.awt.Dimension(400, 450));
+
+        btn_BuscarJuego.setIcon(new javax.swing.ImageIcon(getClass().getResource("/spaceinvaders/Images/btn_Buscar.png"))); // NOI18N
+        btn_BuscarJuego.setBorder(null);
+        btn_BuscarJuego.setBorderPainted(false);
+        btn_BuscarJuego.setContentAreaFilled(false);
+        btn_BuscarJuego.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_BuscarJuego.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_BuscarJuegoActionPerformed(evt);
+            }
+        });
+
+        btn_CargarJuego.setIcon(new javax.swing.ImageIcon(getClass().getResource("/spaceinvaders/Images/btn_Cargar.png"))); // NOI18N
+        btn_CargarJuego.setBorder(null);
+        btn_CargarJuego.setBorderPainted(false);
+        btn_CargarJuego.setContentAreaFilled(false);
+        btn_CargarJuego.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btn_CargarJuego.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_CargarJuegoActionPerformed(evt);
+            }
+        });
+
+        btn_Back.setIcon(new javax.swing.ImageIcon(getClass().getResource("/spaceinvaders/Images/btn_Back.png"))); // NOI18N
+        btn_Back.setBorder(null);
+        btn_Back.setBorderPainted(false);
+        btn_Back.setContentAreaFilled(false);
+        btn_Back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_BackActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout pnlCargarPartidaLayout = new javax.swing.GroupLayout(pnlCargarPartida);
+        pnlCargarPartida.setLayout(pnlCargarPartidaLayout);
+        pnlCargarPartidaLayout.setHorizontalGroup(
+            pnlCargarPartidaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCargarPartidaLayout.createSequentialGroup()
+                .addGroup(pnlCargarPartidaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlCargarPartidaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(btn_BuscarJuego)
+                        .addGroup(pnlCargarPartidaLayout.createSequentialGroup()
+                            .addGap(164, 164, 164)
+                            .addComponent(btn_CargarJuego, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(pnlCargarPartidaLayout.createSequentialGroup()
+                        .addGap(185, 185, 185)
+                        .addComponent(btn_Back)))
+                .addContainerGap(181, Short.MAX_VALUE))
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnlMenuPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        pnlCargarPartidaLayout.setVerticalGroup(
+            pnlCargarPartidaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCargarPartidaLayout.createSequentialGroup()
+                .addContainerGap(197, Short.MAX_VALUE)
+                .addComponent(btn_BuscarJuego, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(100, 100, 100)
+                .addComponent(btn_CargarJuego, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(112, 112, 112)
+                .addComponent(btn_Back, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(170, 170, 170))
         );
+
+        getContentPane().add(pnlCargarPartida, "pnlCargarPartida");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -150,20 +219,80 @@ public class Principal extends javax.swing.JFrame {
     private void btn_NewGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_NewGameActionPerformed
         this.setVisible(false);
         SpaceInvaders spaceInvaders = new SpaceInvaders(this);
-        
+
     }//GEN-LAST:event_btn_NewGameActionPerformed
 
     private void btn_ContinuarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ContinuarActionPerformed
-//        GameStateManager.loadGameState(PATH_BACKGROUND_GIF, gamePanel);
+        mostrarPanel("pnlCargarPartida");
     }//GEN-LAST:event_btn_ContinuarActionPerformed
 
+    private void btn_BackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BackActionPerformed
+        mostrarPanel("pnlMenuPrincipal");
+    }//GEN-LAST:event_btn_BackActionPerformed
+
+    private void btn_BuscarJuegoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BuscarJuegoActionPerformed
+// Crear el JFileChooser
+        JFileChooser fileChooser = new JFileChooser();
+
+        // Establecer el directorio predeterminado
+        fileChooser.setCurrentDirectory(new File("spaceinvaders/Juego"));
+
+        // Establecer el título del diálogo
+        fileChooser.setDialogTitle("Selecciona una Partida");
+
+        // Establecer el filtro de archivos para mostrar solo archivos
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+        // Mostrar el diálogo de archivo abierto
+        int result = fileChooser.showOpenDialog(this);
+
+        // Si el usuario seleccionó un archivo, guardar la ruta del archivo seleccionado
+        if (result == JFileChooser.APPROVE_OPTION) {
+            archivoSeleccionado = fileChooser.getSelectedFile();
+        }
+    }//GEN-LAST:event_btn_BuscarJuegoActionPerformed
+
+    private void btn_CargarJuegoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CargarJuegoActionPerformed
+        if (archivoSeleccionado != null) {
+            try {
+                ObjectInputStream in = new ObjectInputStream(new FileInputStream(archivoSeleccionado));
+                GameState gameState = (GameState) in.readObject();
+                in.close();
+
+                // Cargar el estado del juego en el GamePanel
+                GamePanel gamePanel = new GamePanel(this);
+                gamePanel.loadGameState(gameState);
+
+                // Mostrar el panel del juego
+                this.setContentPane(gamePanel);
+                this.revalidate();
+                this.repaint();
+
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error al cargar el archivo de juego.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un archivo de juego primero.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_btn_CargarJuegoActionPerformed
+// Método para mostrar un panel específico
+
+    public void mostrarPanel(String panelName) {
+        CardLayout layout = (CardLayout) getContentPane().getLayout();
+        layout.show(getContentPane(), panelName);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_Back;
+    private javax.swing.JButton btn_BuscarJuego;
+    private javax.swing.JButton btn_CargarJuego;
     private javax.swing.JButton btn_Continuar;
     private javax.swing.JButton btn_NewGame;
     private javax.swing.JButton btn_PuntajeMaximo;
     private javax.swing.JButton btn_Salir;
     private javax.swing.JLabel lblTitulo;
+    private javax.swing.JPanel pnlCargarPartida;
     private javax.swing.JPanel pnlMenuPrincipal;
     // End of variables declaration//GEN-END:variables
 }
