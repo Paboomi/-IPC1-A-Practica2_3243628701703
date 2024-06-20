@@ -53,21 +53,12 @@ public class GameStateManager {
             List<Item> items = (List<Item>) in.readObject();
             List<Shot> shots = (List<Shot>) in.readObject();
 
-            // Asignar el GamePanel a cada instancia de Enemy
-            for (Enemy enemy : enemies) {
-                enemy.setGamePanel(gamePanel);
-            }
-
-            // Configurar los objetos cargados en el GamePanel
             gamePanel.setPlayerShip(playerShip);
             gamePanel.setEnemies(enemies);
             gamePanel.setContador(contador);
             gamePanel.setJugador(jugador);
             gamePanel.setItems(items);
             gamePanel.setShots(shots);
-            
-            //Actualizamos el GamePanel
-            gamePanel.repaint();
 
             System.out.println("Juego cargado exitosamente.");
         } catch (IOException | ClassNotFoundException e) {
@@ -75,5 +66,4 @@ public class GameStateManager {
             System.out.println("Error al cargar el juego.");
         }
     }
-
 }

@@ -15,7 +15,7 @@ import spaceinvaders.frontend.GamePanel;
 import spaceinvaders.backend.jugador.Jugador;
 
 public abstract class Item implements Serializable{
-private static final long serialVersionUID = 4L;
+
     protected int x, y, speed;
     protected boolean active;
     protected transient Image image;

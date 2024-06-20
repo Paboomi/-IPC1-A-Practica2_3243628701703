@@ -3,17 +3,12 @@ package spaceinvaders.backend;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import javax.imageio.ImageIO;
 import java.net.URL;
 
-public class Shot implements Serializable {
-
-    private static final long serialVersionUID = 6L;
+public class Shot implements Serializable{
     private int x, y;
     private int speed;
     private transient Image image;
@@ -63,25 +58,5 @@ public class Shot implements Serializable {
     public Rectangle getHitbox() {
         return new Rectangle(x, y, width, height);
     }
-    
-    // Método para serializar y deserializar la instancia de Shot
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject(); // Serializa todos los campos excepto los transient
-
-        // Guardar la imagen como datos de imagen (bytes)
-        if (image != null) {
-            ImageIO.write((BufferedImage) image, "png", out); // Guardar la imagen como PNG
-        }
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject(); // Lee todos los campos excepto los transient
-
-        // Cargar la imagen desde los datos de imagen (bytes)
-        try {
-            image = ImageIO.read(in);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
+

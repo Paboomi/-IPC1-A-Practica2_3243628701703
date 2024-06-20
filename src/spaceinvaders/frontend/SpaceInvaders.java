@@ -12,15 +12,13 @@ public class SpaceInvaders extends javax.swing.JFrame implements ActualizarScore
     private Contador contador;
     private Jugador jugador;
     private Principal principal;
-    private GamePanel gamePanel;
-    
 
-    public SpaceInvaders(Principal principal, GamePanel gamePanel) {
+    public SpaceInvaders(Principal principal) {
         initComponents();
         this.principal = principal;
         jugador = new Jugador();
         jugador.setObservador(this);
-        this.gamePanel = gamePanel;
+        GamePanel gamePanel = new GamePanel(this.principal);
         pnlJuego.setLayout(new BorderLayout());
         pnlJuego.add(gamePanel, BorderLayout.CENTER);
 
@@ -188,14 +186,4 @@ public class SpaceInvaders extends javax.swing.JFrame implements ActualizarScore
     public void actualizarTimer() {
         lblTimer.setText(Integer.toString(contador.getCount()));
     }
-
-    public GamePanel getGamePanel() {
-        return gamePanel;
-    }
-
-    public void setGamePanel(GamePanel gamePanel) {
-        this.gamePanel = gamePanel;
-    }
-    
-    
 }
